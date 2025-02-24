@@ -13,6 +13,11 @@ public class MailController : ControllerBase
 {
     private IConfiguration Configuration { get; }
     
+    public MailController(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+    
     // POST api/<MailController>
     [HttpPost]
     public ActionResult Post([Bind("FirstName, LastName, Email, Phone")] Contactform form)
