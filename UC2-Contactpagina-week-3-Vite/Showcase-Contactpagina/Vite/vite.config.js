@@ -4,12 +4,13 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     plugins: [eslint()],
     build: {
-        outDir: '../wwwroot',
+        outDir: '../wwwroot/js',
         emptyOutDir: true,
         rollupOptions: {
+            input: 'src/main.js',
             output: {
-                entryFileNames: 'js/[name].js', // Main JS file
-                chunkFileNames: 'js/[name]-[hash].js', // Code-split chunks
+                entryFileNames: '[name].js', // Main JS file
+                chunkFileNames: '[name]-[hash].js', // Code-split chunks
                 //assetFileNames: 'assets/[name]-[hash][extname]' // CSS, images, etc.
             }
         }

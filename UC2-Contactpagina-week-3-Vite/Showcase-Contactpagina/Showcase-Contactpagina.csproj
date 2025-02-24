@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Vite\public\" />
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
