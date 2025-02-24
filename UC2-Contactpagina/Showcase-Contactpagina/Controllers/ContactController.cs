@@ -13,10 +13,12 @@ namespace Showcase_Contactpagina.Controllers
     public class ContactController : Controller
     {
         private readonly HttpClient _httpClient;
-        public ContactController(HttpClient httpClient)
+        private IConfiguration Configuration { get; }
+        public ContactController(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri("https://localhost:7278");
+            Configuration = configuration;
         }
 
         // GET: ContactController
@@ -30,9 +32,29 @@ namespace Showcase_Contactpagina.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(Contactform form)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewBag.Message = "De ingevulde velden voldoen niet aan de gestelde voorwaarden";
+                return View();
+            }
+
+            if (form.Subject.Length > 200)
+            {
+                ViewBag.Message = "Het onderwerp mag maximaal 200 tekens bevatten";
+                return View();
+            }
+
+            if (form.Message.Length > 600)
+            {
+                ViewBag.Message = "Het bericht mag maximaal 600 tekens bevatten";
+                return View();
+            }
+
+            CaptchaController captchaController = new(Configuration, _httpClient, Request);
+            bool validateCaptcha = await captchaController.ValidateCaptcha();
+            if (!validateCaptcha)
+            {
+                ViewBag.Message = captchaController.Error;
                 return View();
             }
 
@@ -50,16 +72,16 @@ namespace Showcase_Contactpagina.Controllers
             //Hint: vergeet niet om de mailfunctionaliteit werkend te maken in ShowcaseAPI > Controllers > MailController.cs,
             //      nadat je een account hebt aangemaakt op Mailtrap (of een alternatief).
 
-            HttpResponseMessage response = new HttpResponseMessage(); // Vervang deze regel met het POST-request
+            HttpResponseMessage response = await _httpClient.PostAsync("api/Mail", content);
 
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 ViewBag.Message = "Er is iets misgegaan";
                 return View();
             }
 
             ViewBag.Message = "Het contactformulier is verstuurd";
-            
+
             return View();
         }
     }

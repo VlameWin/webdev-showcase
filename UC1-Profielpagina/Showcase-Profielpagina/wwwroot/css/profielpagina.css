@@ -99,7 +99,7 @@
 
     .profile-content__period {
         font-size: 12px;
-        color: #5c6166;
+        color: orange;
         display: flex;
     }
 }
